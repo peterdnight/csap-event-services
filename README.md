@@ -4,4 +4,6 @@ CSAP event services provide both management activity (who did what, when) and pe
 
 
 Learn More: 
-* [Csap Wiki](https://github.com/csap-platform/csap-core/wiki)
+* [Events Wiki](https://github.com/csap-platform/csap-event-services/wiki)
+* [Csap Core Wiki](https://github.com/csap-platform/csap-core/wiki)
+
