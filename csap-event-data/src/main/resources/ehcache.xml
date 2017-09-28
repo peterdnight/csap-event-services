@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xsi:noNamespaceSchemaLocation="ehcache.xsd" 
+	updateCheck="true" monitoring="autodetect" dynamicConfig="true">
+
+	<!-- refer to http://ehcache.org/ehcache.xml -->
+	
+	
+	<cache name="healthReportCache" 
+		maxEntriesLocalHeap="100" 
+		memoryStoreEvictionPolicy="LRU"
+		timeToLiveSeconds="3600" />
+	
+	<cache name="oneMinuteCache" 
+		maxEntriesLocalHeap="100" 
+		memoryStoreEvictionPolicy="LRU"
+		timeToLiveSeconds="60" />
+	
+	<cache name="oneHourCache" 
+		maxEntriesLocalHeap="100" 
+		memoryStoreEvictionPolicy="LRU"
+		timeToLiveSeconds="3600" />
+	
+
+</ehcache>

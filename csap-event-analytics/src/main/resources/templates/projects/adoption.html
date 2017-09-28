@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>CSAP Adoption</title>
+
+
+		<script th:replace="~{ csap/fragments/libsAndStyles :: pageContent }"></script>
+
+		<script th:replace="csap/fragments/flot-includes :: pageContent"></script>
+
+		<!-- versioned independently -->
+		<script th:src="@{/webjars/flot/0.8.3/jquery.flot.pie.js}"></script>
+
+		<link th:href="@{ /js/csapLibs/qtip/jquery.qtip.min.css }" rel="stylesheet" type="text/css" media="screen" />
+		<script th:src="@{ /js/csapLibs/qtip/jquery.qtip.min.js }"></script>  
+
+
+		<script th:inline="javascript">
+			var api = [[   @{ ${"/api"}    }   ]];
+			var baseUrl = [[@{ ${"/"}}]];
+			$.ajaxSetup({
+			cache : false,
+					traditional : true
+			});
+			var globalLife = [[ ${ @csapInformation.getLifecycle() } ]];
+
+		</script>
+		<script th:src="@{/js/modules/projects/adoption.js}"></script>
+		<style type="text/css">
+			.linkField {
+				width: 25em;
+			}
+
+			.descField {
+				width: 10em;
+			}
+
+			.bordered th,.number {
+				text-align: center;
+			}
+
+			header {
+				font-size: 1.5em;
+				margin-bottom: 1em;
+			}
+
+			table {
+				font-size: 0.8em;
+				display: inline-block;
+			}
+
+			.group {
+				display: inline-block;
+				width: 5em;
+				margin-right: 5em;
+				height: 5em;
+				position: relative;
+			}
+
+			.summlabel {
+				display: inline-block;
+				width: 10em;
+				font-weight: bold;
+				text-align: left;
+				font-size: 1em;
+			}
+
+			.graph {
+				display: inline-block;
+				width: 500px;
+				margin-bottom: 0;
+				padding-bottom: 0;
+				margin-left: 0;
+				margin-top: 0;
+				padding-top: 5px;
+			}
+
+			.graphLabel {
+				font-weight: bold;
+				font-size: 20pt;
+			}
+			.title {
+				font-weight: bold;
+			}
+			/* .value {
+				display: inline-block;
+				width: 10em;
+				
+			} */
+			.value {
+				background-color: #FFFFFF;
+				border-radius: 5px;
+				font-size: 1.5em;
+				margin-top: 4px;
+				padding: 5px;
+				text-align: center;
+				width: 6em;
+			}
+
+			.row {
+				margin: 10px;
+				margin-left: 2em;
+				position: relative;
+			}
+
+			.pushButton {
+				font-size: 1.5em;
+				font-weight: bold;
+				height: 80px;
+				width: 250px;
+				vertical-align: top;
+				margin-top: 30px;
+			}
+
+			#csapUser {
+				font-size: 0.8em;
+			}
+
+			#csapUser .cLabel {
+				text-align: right;
+				width: 5em;
+				display: inline-block;
+				padding-right: 1em;
+				margin-bottom: 0.25em;
+			}
+
+			#csapUser .value {
+				width: 8em;
+				display: inline-block;
+				padding-right: 1em;
+			}
+			#config {
+				font-size: 9pt;
+				margin-left: 3em;
+
+			}
+			#config .simple {
+				vertical-align: middle;
+			}
+
+			#config input {
+				font-size: 9pt;
+				width: 2em;
+				line-height: 12px;
+				text-align: center;
+			}
+
+			.billions {    
+				bottom: 10px;
+				font-size: 9pt;
+				position: absolute;
+			}
+		</style>
+
+	</head>
+
+
+
+	<body th:inline="text" style="min-width: 1200px">
+		<header th:replace="csap/fragments/page :: header"></header>
+		<div id="config"> 
+
+
+			<label style="font-weight: bold">Show Projects with a minimum host count:
+
+				<input  value="11" title="Display only projects with a minimum host count" id="minimumHosts"/>
+			</label>
+
+
+
+			<a  id="serviceHelpButton" class="simple" href="https://github.com/csap-platform/csap-core/wiki" target="_blank" 
+				data-qtipleft="Click for more information on CSAP"  >
+				<img class="but" th:src="@{/images/help.png}"/>About CSAP</a> 
+		</div>
+		<div style="display:inline-block;">
+
+			<div class="row">
+
+				<div class="group">
+					<div class="summlabel">Projects</div>
+					<div class="value" id="projects"></div>
+				</div>
+
+
+				<div class="group">
+					<div class="summlabel">Hosts &nbsp;&nbsp;&nbsp;(Cpus)</div>
+					<div class="value" id="hosts"></div>
+				</div>
+
+				<div class="group" title="In Billions" id="hostDataPoints">
+					<div class="summlabel">Host Metrics</div>
+					<div class="value" id="hostData">
+					</div>
+					<div class="billions">* in Billions</div>
+				</div>
+
+				<div class="group">
+					<div class="summlabel">Engineers</div>
+					<div class="value" id="users"></div>
+				</div>
+
+
+			</div>
+			<div class="row">
+				<div class="group" title="Number of unique service offerings">
+					<div class="summlabel">Services</div>
+					<div class="value" id="services"></div>
+				</div>
+
+				<div class="group" title="Number of linux processes">
+					<div class="summlabel">Instances</div>
+					<div class="value" id="instances"></div>
+				</div>
+
+				<div class="group" title="In Billions" id="serviceDataPoints">
+					<div class="summlabel">Service Metrics</div>
+					<div class="value" id="serviceData">
+					</div>
+					<div class="billions">* in Billions</div>
+				</div>
+
+				<div class="group">
+					<div class="summlabel">Eng. Activity</div>
+					<div class="value" id="userActivity"></div>
+				</div>
+
+
+			</div>
+
+		</div>
+
+		<button class="pushButton" id="explore">Explore Trends</button>		
+
+		<div class="row">
+			<section class="graph">
+				<div class="graphLabel">Hosts</div>
+				<div id="hostsPieChart" style="width: 500px; height: 400px;"></div>
+			</section>
+
+			<section class="graph">
+				<div class="graphLabel">Cpus</div>
+				<div id="cpuPieChart" style="width: 500px; height: 400px;"></div>
+			</section>
+		</div>
+		<div class="row">
+			<section class="graph">
+				<div class="graphLabel">Service Types</div>
+				<div id="servicesPieChart" style="width: 500px; height: 400px;"></div>
+			</section>
+			<section class="graph">
+				<div class="graphLabel">Services Deployed (All Types)</div>
+				<div id="serviceInstancesPieChart"
+					 style="width: 500px; height: 400px;"></div>
+			</section>
+		</div>
+		<div class="row">
+			<section class="graph">
+				<div class="graphLabel">Engineers</div>
+				<div id="userPieChart" style="width: 500px; height: 400px;"></div>
+			</section>
+			<section class="graph">
+				<div class="graphLabel">Engineering Activity</div>
+				<div id="userActivityPieChart" style="width: 500px; height: 400px;"></div>
+			</section>
+		</div>
+	</body>
+</html>

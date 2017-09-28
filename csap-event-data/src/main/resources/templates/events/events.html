@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<title>Events Viewer</title>
+
+		<script th:replace="~{ csap/fragments/libsAndStyles :: pageContent }"></script>
+
+		<script th:src="@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/csapLibs/csapUtils/CsapUser.js')}   }"></script>
+		
+		<link  th:href="@{/webjars/datatables/1.10.12/css/jquery.dataTables.css}" rel="stylesheet" type="text/css" media="screen" />
+		<script th:src="@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/DataTables/jquery.dataTables.js')}   }"></script>
+		
+		<link th:href="@{/js/csapLibs/qtip/jquery.qtip.min.css}" rel="stylesheet" type="text/css" media="screen" />
+		<script th:src="@{/js/csapLibs/qtip/jquery.qtip.min.js}"></script>
+
+
+		<script th:inline="javascript">
+			
+			var agentHostUrlPattern = [[${ agentHostUrlPattern }]];
+			var eventApi = [[ @{ /eventApi } ]];
+			var api = [[  @{ /api }    ]];
+			var conPath = [[   @{ / }]];
+			var isAuthorized = [[ ${admin}
+			]];
+		</script>
+
+		<!--  <script  th:attr="data-main=@{/js/modules/_main}" th:src="@{/webjars/requirejs/2.1.20/require.min.js}"></script> -->
+
+		<script
+			data-th-attr="data-main=@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/modules/_main.js')}   }"
+			th:src="@{/webjars/requirejs/2.1.20/require.min.js}"></script>
+			
+		<link  th:href="@{ ${@mvcResourceUrlProvider.getForLookupPath('/css/events.css')} }" rel="stylesheet" type="text/css" media="screen" />
+
+
+	</head>
+
+
+	<body style="min-width: 60em;" th:inline="text">
+
+		<header th:replace="~{ csap/fragments/page :: header } "></header>
+
+		<div id="adminButtons" th:if="${ admin }">
+
+			<button  
+				id="deleteButton" class="pushButton" title="Click to delete"><img th:src="@{/images/deleteFolder.png}"/></button>
+
+			<button 
+				id="insertButton" class="pushButton"  title="Click to add"><img th:src="@{/images/newFolder.png}"/></button>
+		</div>
+
+
+		<div id="searchControls">
+
+
+			<!-- <div class="noteHighlight"><span id="categoryInput">Category </span></div> -->
+
+			<span id="metaLoading" >
+				<img title="Querying Events for filters matching date range" id="loadCountImage"  th:src="@{ /images/animated/loadSmall.gif} "/>
+			</span>
+
+
+			<input id="simpleSearch" class="columnSearchFilter"
+				   type="text"  placeholder="Category search text"
+				   title="Category Filter"/>
+
+
+			<label title="Display events after date">Start:
+				<input type="text" id="from"
+					   name="from" style="font-size: 0.8em;width: 6em; margin-right: 0em;" class="columnSearchFilter"
+					   /> 
+			</label> 
+
+			<label style="margin: 0em;" title="Display events before date" >To:
+				<input type="text" id="to" name="to" style="font-size: 0.8em;width: 6em;" class="columnSearchFilter"/>
+			</label>
+
+
+			<button id="searchButton" class="pushButton" title="Refresh events"><img th:src="@{/images/16x16/view-refresh.png}"/></button>	
+
+			<a id="searchDialog" class="simple"  title="Modify search criteria and refresh display" 
+			   href="#advanced">More Filters</a>
+
+			<span id="metaTimeOut" title="Warning: population of one or more of the search filter categories timed out. Proceed with default filters or choose a shorter time interval">
+				<img  th:src="@{ /images/16x16/warning.png} "/>
+			</span>
+
+		</div>
+
+		<div id="advanced"
+			 style="display: none;"
+			 class="">
+
+			<br/>
+			<br/>
+			<label style="margin-left: 2 em;"> App Id:</label>
+			<select
+				id="appIdSearch" style="width: 6em"
+				class="advancedFilters">
+			</select> 
+
+			<label style="margin-left: 2 em"> Lifecycle:</label> 
+			<select
+				id="lifecycleSearch" style="width: 6em"
+				class="advancedFilters">
+			</select> 
+
+			<label style="margin-left: 2 em"> UserIds : </label> 
+			<select
+				id="userIdSelect" style="width: 7em" title=""
+				class="">
+			</select> 
+
+			<label style="margin-left: 2 em"> Host : </label> 
+			<select
+				id="hostSelect" style="width: 7em" title=""
+				class="">
+
+			</select> 
+			<br/><br/>
+			<label style="margin-left: 2 em"> Project : </label>
+			<select id="projectSelect" style="width: 7em"
+					title="" class="">
+			</select>
+
+			<label style="margin-left: 2 em"> Summary : </label> 
+			<input
+				type="text" class="columnSearchFilter" id="summarySearch"
+				style="width: 10em" placeholder="Summary search text"
+				title="Entire summary field is searched for text matches.Regular expression supported.Eg .*starting.*"/>
+
+			<br/><br/> 
+
+
+			<label style="margin-left: 2 em" title="Auto refresh seconds"> Refresh :  
+				<select
+					id="autoRefresh"  style="width: 5em">
+					<option value="0">Never</option>
+					<option value="2000">2</option>
+					<option value="10000">10</option>
+					<option value="60000">60</option>
+				</select>
+			</label>
+			<label style="margin-left: 2 em"> Event Timestamp :  <input
+					type="checkbox" class="columnSearchFilter" id="eventTimeStamp"
+					style="" 
+					title="Select to enable viewing and sorting by event ReceivedOn timestamp. Default is remote timestamp"/> 
+			</label>
+		</div>
+
+
+		<div id="healthTableColumn" class="columnSelector" style="display:none"></div>
+		<div>
+			<label style="margin-left: 1em; display: none;" id="healthReportLable">  Generating Health Report </label>
+			<table id="healthReportsTable" class="bordered reports fixed" style="display: none;margin-bottom: 5em ">
+				<thead style="text-align: left">
+					<tr>
+						<th>Host</th>
+						<th>Date</th>
+						<th>Error Count</th>
+						<th>Time</th>
+						<th>Error Message</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		<div id="logRotateDiv" style="display: none;margin-bottom: 5em " class="logRotateClass" title="Log rotation summary">
+			<label style="margin-left: 1em;"> Log Rotation Summary </label>
+			<label style="margin-left: 3em;font-size: 10px"> Filter </label>
+
+			<select id="filterTotal"  style="width: 5em" title="Filter total">
+				<option value="0">None</option>
+				<option value="5" selected="selected">5</option>
+				<option value="10">10</option>
+				<option value="30">30</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+				<option value="500">500</option>
+			</select>
+			<table id="logRotateTable" class="bordered reports fixed" style="margin-bottom: 5em ">
+				<thead style="text-align: left">
+
+					<tr>
+						<th>Service</th>
+						<th>Count</th>
+						<th>Mean Seconds</th>
+						<th>Total</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+
+
+		<div id="hostDiv" style="display: none;margin-bottom: 5em " class="hostClass" title="Host summary">
+			<label style="margin-left: 1em;"> Host Summary </label>
+			<label style="margin-left: 3em;font-size: 10px"> Filter </label>
+
+			<select id="filterCpu" style="width: 5em" title="Filter cpu">
+				<option value="0">All</option>
+				<option value="1">1</option>
+				<option value="2" selected="selected">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+			</select>
+
+			<table id="hostTable" class="bordered reports fixed" style="margin-bottom: 5em ">
+				<thead style="text-align: left">
+
+					<tr>
+						<th>Host</th>
+						<th>Cores</th>
+						<th>Cores Used</th>
+						<th>Usr Cpu</th>
+						<th>Sys Cpu</th>
+						<th>Alerts</th>
+						<th>Load</th>
+						<th>Total IO</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		<table id="eventsTable" class="display" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+
+					<th>Category</th>
+					<th>Summary</th>
+					<th>Env</th>
+					<th>Project</th>
+					<th >Host</th>
+					<th>Created On</th>
+					<th>ReceivedOn</th>
+				</tr>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+		<div id="editTemplate" style="display: none">
+			<div id="editDialog">
+				<label>
+					<span>Category:</span>
+					<input type="text" id="insertEventCategory"/> 
+				</label>
+				<label>
+					<span>Lifecycle:</span>
+					<input type="text" id="eventInsertLife"/> 
+				</label>
+				<label>
+					<span>Project:</span>
+					<input type="text" id="insertEventProject"/> 
+				</label>
+				<label>
+					<span>Appid:</span>
+					<input type="text" id="eventInsertappId"/> 
+				</label>
+				<label>
+					<span>Summary:</span>
+					<input type="text" id="insertEventSummary"/> 
+				</label>
+				<br/>
+				<textarea placeholder="Enter your text" id="insertEventData"></textarea>
+			</div>
+		</div>
+
+		<div id="eventEditTemplate" style="display: none">
+			<div id="eventEditDialog">
+				<textarea placeholder="Enter your text" id="editEventData"></textarea>
+			</div>
+		</div>
+	</body>
+</html>

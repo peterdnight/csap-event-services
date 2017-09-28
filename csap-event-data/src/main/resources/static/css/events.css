@@ -1,0 +1,230 @@
+#metaLoading {
+	display: inline-block;
+	min-width: 18px;
+}
+#metaLoading img {
+	width: 18px;
+	margin-left: 5px;
+	vertical-align: middle;
+}
+#metaTimeOut {
+	margin-left: 5px;
+	display: none;
+}
+#simpleSearch {
+	width: 20em;
+	margin-right: 0em;
+	vertical-align: bottom;
+}
+
+#eventsTable td.details-control {
+	background: url('../images/details_open.png') no-repeat center left;
+	padding-left: 30px;
+	cursor: pointer;
+}
+
+#eventsTable td.details-control:hover {
+	text-decoration: underline ;
+}
+
+#eventsTable tr.shown td.details-control {
+	background: url('../images/details_close.png') no-repeat center left;
+}
+
+header {
+	/* text-align: left;
+					 padding-left: 2em;
+					 padding-right: 2em;
+					 margin-bottom: 1em; */
+	margin-top: 0.5em;
+}
+
+.group {
+	min-width: 1000px;
+	font-weight: bold;
+}
+
+.dataTables_filter {
+	display: none;
+}
+
+#eventsTable th {
+	text-align: left;
+	padding: 0;
+	padding-bottom: 3px;
+	padding-left: 10px;
+}
+
+#eventsTable th:nth-child(5) {
+	min-width: 120px
+}
+#eventsTable th:nth-child(6) {
+	min-width: 100px
+}
+#eventsTable th:nth-child(7) {
+	min-width: 100px
+}
+
+#eventsTable_length {
+	font-size: 9pt;
+	font-weight: bold;
+
+	position: absolute;
+	top: -3em;
+	right: 3em;
+}
+
+#eventsTable {
+	font-size: 11pt;
+}
+
+#eventsTable_length select {
+	margin: 0;
+	font-size: 8pt;
+}
+
+pre {
+	word-break: break-all;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+}
+
+table.dataTable tbody tr {
+	font-size: 0.8em;
+}
+
+table.healthReportsTable {
+	font-size: 0.8em;
+	display: inline-block;
+}
+
+#healthReportsTable th:nth-child(1) {
+	width: 9em;
+	text-align: center;
+}
+
+#healthReportsTable td:nth-child(1) {
+	width: 9em;
+	text-align: left;
+	vertical-align: top;
+}
+
+#healthReportsTable td:nth-child(2), #healthReportsTable th:nth-child(2)
+{
+	width: 6em;
+	text-align: center;
+	vertical-align: top;
+}
+
+#healthReportsTable td:nth-child(3), #healthReportsTable th:nth-child(3)
+{
+	width: 4em;
+	text-align: center;
+	vertical-align: top;
+}
+
+#healthReportsTable td:nth-child(5) {
+	width: 45em;
+	text-align: left; 
+	vertical-align: top;
+}
+
+#adminButtons {
+	display: inline-block;
+	margin-left: 2em;
+}
+
+#adminButtons button {
+	padding: 0;
+	height: 20px;
+	line-height: 20px;
+}
+
+#adminButtons button img {
+	vertical-align: top;
+}
+
+#adminButtons button img {
+
+}
+
+#searchControls {
+	background-color: lightgray;
+	margin-bottom: 1em;
+}
+
+#searchControls label {
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+#searchDialog {
+	font-size: 8pt;
+	margin-right: 2em;
+}
+
+#searchButton {
+	padding: 0;
+	margin-right: 1em;
+}
+
+#to, #from {
+	margin-right: 0;
+	margin-left: 0;
+}
+
+#simpleSearch {
+	margin-right: 1em ;
+}
+#searchControls button {
+
+}
+
+#healthReportsTable th:nth-child(5) {
+	width: 45em;
+	text-align: center;
+}
+
+#healthReportsTable td:nth-child(4) {
+	width: 6em;
+	text-align: left;
+}
+
+#healthReportsTable th:nth-child(4) {
+	width: 6em;
+	text-align: center;
+}
+
+#logRotateTable td:nth-child(2), #logRotateTable td:nth-child(3),
+#logRotateTable td:nth-child(4) {
+	text-align: center;
+}
+
+.userids {
+	font-size: 0.8em;
+}
+
+.ms {
+	padding-left: 14em;
+}
+
+#editDialog label span {
+	display: inline-block;
+	width: 10em;
+	text-align: right;
+}
+
+#editDialog label {
+	display: inline-block;
+}
+
+.ui-menu {
+	z-index: 9999 !important;
+}
+
+.ui-autocomplete {
+	height: 400px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+
+}

@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<title>Analytics Test</title>
+
+		<script th:replace="~{ csap/fragments/libsAndStyles :: pageContent }"></script>
+
+		<!--  testing only, not used -->
+		<script th:replace="~{ csap/fragments/jqplot-includes :: pageContent }"></script>
+		<script th:replace="~{ csap/fragments/misc :: pageContent }"></script>
+
+		<script th:src="@{ ${@mvcResourceUrlProvider.getForLookupPath('/js/simple.js')} }"></script>
+
+		<style>
+			table.simple {
+				width: 80em;
+				margin-bottom: 3em;
+				position: relative;
+			}
+
+			table td:nth-child(1) {
+				width: 25em;
+			}
+
+			table td:nth-child(2) {
+				width: 5em;
+			}
+
+			header .noteAlt {
+				font-size: 0.7em;
+				margin: 0;
+				padding: 3px;
+			}
+
+			div.title {
+				font-size: 10pt;
+				margin-top: -1.8em;
+				width: 40em;
+				color: black;
+				position: absolute;
+				top: 0.8em;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header th:replace="~{ csap/fragments/page :: header } "></header>
+
+
+		<div class="noteAlt">
+			After mongo restarts - mongo indexs will need to be loaded and can take several minutes.<br/>
+			After analytics restarts - caches are empty so some queries will take longer
+		</div>
+
+		<table id="mainTests" class="simple">
+			<thead>
+
+				<tr>
+					<th><div class="title">User Experience</div> Click to launch</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+				<tr>
+					<td class="col1"><a class="simple" th:href="@{/}"
+										target="_blank">CSAP Adoption Portal</a></td>
+					<td class="col2">html</td>
+					<td class="col2">Shows usage and adoption</td>
+				</tr>
+
+				<tr>
+					<td class="col1">
+						<a class="simple" th:href="@{/services(projName='SNTC and PSS',appId='csapssp.gen')}"
+						   target="_blank">
+							services SNTC
+						</a>
+						<br/>
+						<a class="simple" th:href="@{/services(projName='CSAP Engineering',appId='csapeng.gen')}"
+						   target="_blank">
+							services csap
+						</a>
+					</td>
+					<td class="col2">html</td>
+					<td class="col2">Service counts by lifecycle UI</td>
+				</tr>
+
+				<tr>
+					<td class="col1">
+						<a class="simple" th:href="@{/api/report/instanceInfo(projectName='SNTC and PSS',appId='csapssp.gen')}"
+						   target="_blank">report/instanceInfo</a></td>
+					<td class="col2">json</td>
+					<td class="col2">Service counts by lifecycle JSON</td>
+				</tr>
+
+
+
+				<tr>
+					<td class="col1"><a class="simple" th:href="@{/api/report/postAnalytics(offSet='1')}"
+										target="_blank">TriggerAdoptionReport</a></td>
+					<td class="col2">text</td>
+					<td class="col2">processes all projects events from previous day and posts a new /csap/reports/global/daily</td>
+				</tr>
+
+			</tbody>
+
+
+		</table>
+
+
+
+		<table id="mainTests" class="simple">
+			<thead>
+
+				<tr>
+					<th><div class="title">Performance Apis: configurable collections, default: 30s, 5 minutes, 1 hour</div> Click to launch</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+
+			</thead>
+
+			<tbody>
+
+
+
+				<tr>
+					<td class="col1">
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/resource_3600'(numberOfDays=1)}"
+						   target="_blank"> 60 minutes</a><br/>
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/resource_300'(numberOfDays=1)}"
+						   target="_blank"> 5 minute</a><br/>
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/resource_30'(numberOfDays=1)}"
+						   target="_blank"> 30 second</a><br/>
+
+
+					</td>
+					<td class="col2">json</td>
+					<td class="col2">Host OS Shared metrics: includes cpu, disk, memory and many other resources shared by all processes on the host</td>
+				</tr>
+
+
+				<tr>
+					<td class="col1">
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/service_3600'(numberOfDays=1,serviceName=CsAgent)}"
+						   target="_blank"> CsAgent: 60 minute</a><br/>
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/service_3600'(numberOfDays=1)}"
+						   target="_blank"> All: 60 minutes</a><br/>
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/service_300'(numberOfDays=1)}"
+						   target="_blank"> All: 5 minute</a><br/>
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/service_30'(numberOfDays=1)}"
+						   target="_blank"> All: 30 second</a><br/>
+
+					</td>
+					<td class="col2">json</td>
+					<td class="col2">
+						Service OS Metrics: OS Resources consumed on a per linux process basis, including top, disk reads/writes, open files, open sockets, and many more. 
+						Only processes configured will be collected; CSAP auto collects all configured services that have been added to application model.
+					</td>
+				</tr>
+
+				<tr>
+					<td class="col1">
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/jmx_3600'(numberOfDays=1,serviceName=CsAgent)}"
+						   target="_blank"> CsAgent: 60 minute</a><br/>
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/jmx_3600'(numberOfDays=1)}"
+						   target="_blank"> All: 60 minutes</a><br/>
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/jmx_300'(numberOfDays=1)}"
+						   target="_blank"> All: 5 minutes</a><br/>
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/jmx_30'(numberOfDays=1)}"
+						   target="_blank"> All: 30 second</a><br/>
+
+					</td>
+					<td class="col2">json</td>
+					<td class="col2">Service Java Metrics: a default set of Java metrics will be collected via JMX, including Heap usage, Http requests, and many more.</td>
+				</tr>
+
+				<tr>
+					<td class="col1">
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/app-CsAgent_3600'(numberOfDays=1,serviceName=CsAgent)}"
+						   target="_blank"> CsAgent:  60 minute</a><br/>
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/app-CsAgent_300'(numberOfDays=1)}"
+						   target="_blank"> CsAgent: 5 minute</a><br/>
+
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/app-CsAgent_30'(numberOfDays=1)}"
+						   target="_blank"> CsAgent: 30 second</a><br/>
+
+						<a class="simple" th:href="@{'/api/metrics/'+ ${@csapInformation.hostName} + '/jmxCsAgent_3600'(numberOfDays=1,serviceName=CsAgent)}"
+						   target="_blank"> CsAgent Old: uses jmx prefix</a><br/>
+
+					</td>
+					<td class="col2">json</td>
+					<td class="col2">
+						Service Application Metrics: The efficiency and availability of a service consists of work produced - resources consumed. CSAP Agent
+						can be configured to collect (Http, JMX) any additional datapoints produced by ServiceEndpoints.
+					</td>
+				</tr>
+
+
+			</tbody>
+
+
+		</table>
+
+
+
+		<table id="eventBrowser" class="simple">
+			<thead>
+
+				<tr>
+					<th><div class="title">Report Apis: 24 hour summary Data</div> Click to launch</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+
+				<tr>
+					<td class="col1">
+						<a class="simple" th:href="@{/api/report/userid(noParams=test)}">
+							24 hours - ALL
+						</a>
+
+						<br/>
+						<a class="simple" th:href="@{/api/report/userid(callback=test)}">
+							24 hours - ALL , JSONP
+						</a>
+
+						<br/>
+						<a class="simple" th:href="@{/api/report/userid(numDays=7)}">
+							 7 Days - All
+						</a>
+
+						<br/>
+
+						<a class="simple"
+						   th:href="@{/api/report/userid(appId='csapeng.gen',life='dev',project='CSAP Engineering',numDays=2,dateOffSet=3)}">
+							dev CSAP Engineering
+						</a>
+
+						<br/>
+
+						<a class="simple"
+						   th:href="@{/api/report/userid(appId='csapeng.gen',life='prod',project='CSAP Engineering',numDays=2,dateOffSet=3)}">
+							prod CSAP Engineering
+						</a>
+
+						<br/>
+
+						<a class="simple"
+						   th:href="@{/api/report/userid(appId='csapssp.gen',life='prod',project='SNTC and PSS',numDays=2,dateOffSet=3)}">
+							dev SNTC and PSS
+						</a>
+					</td>
+					<td class="col2">JSON</td>
+					<td class="col2">userid reports</td>
+				</tr>
+
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/vm(appId='csapeng.gen',life='dev',project='CSAP Engineering',numDays=2)}">VM
+							Report</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm report</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/service(appId='csapeng.gen',life='dev',project='CSAP Engineering',numDays=1)}">Service
+							Report</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">service report</td>
+				</tr>
+
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/service(appId='csapeng.gen',life='dev',project='CSAP Engineering',numDays=1,host='csap-dev01',serviceName='mongoDb')}">Service
+							Report With Filter</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">service report with host service filter</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/service/detail(appId='csapeng.gen',life='dev',project='CSAP Engineering',numDays=1,serviceName='mongoDb')}">Service
+							Detail Report</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">service detail report</td>
+				</tr>
+
+				<tr>
+					<td class="col1">
+						<a class="simple"
+						   th:href="@{/api/report/jmx(appId='csapeng.gen',life='dev',project='CSAP Engineering',numDays=1)}">
+							JMX report CSAP dev
+						</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/jmx(appId='csapeng.gen',life='prod',project='CSAP Engineering',numDays=1)}">
+							JMX report CSAP prod
+						</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/jmx(appId='csapssp.gen',life='prod',project='SNTC and PSS',numDays=1)}">
+							JMX report SNTC PROD
+						</a>
+					</td>
+					<td class="col2">JSON</td>
+					<td class="col2">jmx report</td>
+				</tr>
+
+
+
+				<tr>
+					<td class="col1">
+						<a class="simple"
+						   th:href="@{/api/report/jmx/detail(appId='csapeng.gen',life='dev',project='CSAP Engineering',numDays=1,serviceName='data')}">
+							Jmx details data dev
+						</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/jmx/detail(appId='csapeng.gen',life='prod',project='CSAP Engineering',numDays=1,serviceName='data')}">
+							Jmx details data prod
+						</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/jmx/detail(appId='csapssp.gen',life='prod',project='SNTC and PSS',numDays=1,serviceName='ILoadBalancer')}">
+							Jmx details ILoadBalancer prod
+						</a>
+					</td>
+
+					<td class="col2">JSON</td>
+					<td class="col2">jmx detail report</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/jmxCustom(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=1,serviceName=data)}">Custom
+							JMX</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">jmx custom report</td>
+				</tr>
+
+				<tr>
+					<td class="col1">
+						<a class="simple"
+						   th:href="@{/api/report/jmxCustom/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=1,serviceName=data)}">
+							Custom JMX for data service in dev
+						</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/jmxCustom/detail(appId='csapeng.gen',life=prod,project='CSAP Engineering',numDays=1,serviceName=data)}">
+							Custom JMX for data service in prod
+						</a>
+					</td>
+					<td class="col2">JSON</td>
+					<td class="col2">jmx custom detail report</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/attributes(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=1,serviceName=data)}">Attributes</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">attributes</td>
+				</tr>
+
+			</tbody>
+
+		</table>
+
+		<table id="hostBrowser" class="simple">
+			<thead>
+
+				<tr>
+					<th><div class="title">Host Selection Apis - select hosts based on criteria</div> Click to launch</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/top(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,metricsId=vm.coresActive,hosts=2)}">Top
+							By Cores</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Top by cores active</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/top(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,metricsId=process.topCpu,hosts=2)}">Top
+							By Cpu</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Top by top Cpu</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/top(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,metricsId=process.topCpu_mongoDb,hosts=1)}">Top
+							Mongo By Cpu</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Top by top Cpu mongo</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/top(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,metricsId=jmx.heapUsed,hosts=2)}">Top
+							By Heap</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Top by heap</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/top(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,metricsId=jmx.heapUsed_data,hosts=2)}">Top
+							Data Proj By Heap</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Top by heap data</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/top(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,metricsId=jmxCustom.data.EventPostRate,hosts=2)}">Top
+							By Event Post</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Top by Event Post Rate</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/top(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=1,metricsId=health.UnHealthyEventCount,hosts=2)}">Top
+							UnHealthy</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Top by unhealthy</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/low(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,metricsId=vm.coresActive,hosts=2)}">Low
+							By Core</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Low by cores active</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<table id="trendBrowser" class="simple">
+			<thead>
+
+				<tr>
+					<th><div class="title">Daily Trending: Uses 24hour report collections</div> Click to launch</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/custom/logRotate(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=MeanSeconds)}">Log
+							Rotate</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">log rotate report</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/custom/logRotate(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=MeanSeconds,serviceName=CsAgent)}">Log
+							Rotate With Filter</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">log rotate filter by service</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/userid(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true)}">Userid
+							Report</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">User id report</td>
+				</tr>
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/custom/core(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true)}">Vm
+							Core report</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm core report</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/custom/core(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,perVm=true)}">Vm
+							Core Per Vm</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm core report per vm</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/custom/core(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,perVm=true,top=2)}">Vm
+							Core Top 2</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm core report top 2</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/custom/core(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,perVm=true,low=2)}">Vm
+							Core Low 2</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm core report low 2</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/custom/health(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5)}">Vm
+							Health Report</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm health report</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/custom/health(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,perVm=true)}">Vm
+							Health Per Vm</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm health report per vm</td>
+				</tr>
+
+				<tr>
+					<td class="col1">
+						<a class="simple"
+						   th:href="@{/api/report/vm(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true,metricsId=totalUsrCpu)}">
+							VM: totalUsrCpu</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/vm(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true,metricsId=totalUsrCpu,divideBy=numberOfSamples)}">
+							VM: totalUsrCpu/num samples</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/vm(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true,metricsId=totalSysCpu,divideBy=numberOfSamples)}">
+							VM: totalSysCpu/num samples</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/vm(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true,metricsId=totalUsrCpu,metricsId=totalSysCpu,divideBy=numberOfSamples)}">
+							VM: (totalUsrCpu+totalSysCpu)/num samples</a>
+					</td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm reports cpu </td>
+				</tr>
+
+				<tr>
+					<td class="col1">
+						<a class="simple"
+						   th:href="@{/api/report/vm(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true,metricsId=totalMemFree)}">
+							VM: totalMemFree</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/vm(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true,metricsId=totalMemFree,divideBy=numberOfSamples)}">
+							VM: totalMemFree/num samples</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/vm(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true,metricsId=totalMemFree,divideBy='numberOfSamples',divideBy=1024)}">
+							VM: totalMemFree/num samples/1024</a>
+					</td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm: totalMemFree </td>
+				</tr>
+
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/vm(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true,metricsId=csapThreadsTotal,allVmTotal=true,divideBy=numberOfSamples)}">All
+							Vm / Num Samples</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">all vm report / num samples</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/vm(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true,metricsId=totalMemFree,divideBy=10)}">
+							Vm Report/10</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm report / number</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/vm(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=20,trending=true,metricsId=totalMemFree,divideBy=numberOfSamples,divideBy=10)}">
+							Vm Report / num samples * 10</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">vm repor / (num samples * number) )</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/service(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=topCpu)}">All
+							Service</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">all service report</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/service/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=topCpu,serviceName=CsAgent)}">
+							Service</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">service report</td>
+				</tr>
+
+
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/service/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=topCpu,serviceName=CsAgent,divideBy=numberOfSamples)}">Service
+							top Cpu</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">service report single key / num samples</td>
+				</tr>
+
+				<tr>
+					<td class="col1">
+						<a class="simple"
+						   th:href="@{/api/report/service/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=topCpu,metricsId=rssMemory,serviceName=CsAgent,divideBy=numberOfSamples)}">Service
+							thread and Rss CsAgent</a>
+					</td>
+					<td class="col2">JSON</td>
+					<td class="col2">service report multi key / num samples</td>
+				</tr>
+
+				<tr>
+					<td class="col1">
+						<a class="simple"
+						   th:href="@{/api/report/service/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=threadCount,serviceName='admin,data',divideBy=numberOfSamples)}">
+							threads for  admin and data</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/service/detail(allVmTotal=true,appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=threadCount,serviceName='admin,data',divideBy=numberOfSamples)}">
+							threads for  admin and data allVmTotal</a>
+					</td>
+					<td class="col2">JSON</td>
+					<td class="col2">multiple service report multi key / num samples</td>
+				</tr>
+
+
+				<tr>
+					<td class="col1">
+						<a class="simple"
+						   th:href="@{/api/report/jmx/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=25,trending=true,metricsId=heapUsed,serviceName=data)}">
+							JMX: data Heap Used</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/jmx/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=25,trending=true,metricsId=cpuPercent,serviceName='ServletSample,admin')}">
+							JMX: ServletSample,admin cpu percent</a>
+						<br/>
+						<a class="simple"
+						   th:href="@{/api/report/jmx/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=25,trending=true,metricsId=httpRequestCount,serviceName='data,admin')}">
+							JMX: data,admin Http Requests</a>
+					</td>
+					<td class="col2">JSON</td>
+					<td class="col2">jmx report: Heap Used</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/jmx/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=25,trending=true,metricsId=heapUsed,serviceName=data,divideBy=numberOfSamples)}">Jmx
+							Report/ Num Samples</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">jmx report key / num samples</td>
+				</tr>
+
+
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/jmxCustom/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=25,trending=true,metricsId=EventPostRate,serviceName=data)}">JMX
+							Custom Report</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">jmx custom report</td>
+				</tr>
+
+
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/jmxCustom/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=EventPostRate,serviceName=data)}">Jmx
+							report group by</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Report 1. jmx report group by service</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/jmxCustom/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=EventPostRate,serviceName=data,divideBy=numberOfSamples)}">Jmx
+							report group by</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Report 2. jmx report group by service / num
+						samples</td>
+				</tr>
+
+				<tr>
+					<td class="col1"><a class="simple"
+										th:href="@{/api/report/jmxCustom/detail(appId='csapeng.gen',life=dev,project='CSAP Engineering',numDays=5,trending=true,metricsId=EventPostRate,serviceName=data,allVmTotal=true,divideBy=numberOfSamples)}">Jmx
+							report group by</a></td>
+					<td class="col2">JSON</td>
+					<td class="col2">Report 3. jmx report group by host / num
+						samples</td>
+				</tr>
+
+
+			</tbody>
+
+		</table>
+
+
+		<table id="SpringMvc" class="simple">
+			<thead>
+
+				<tr>
+					<th><div class="title">Model View Controller</div> Click to
+						test</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+				<tr>
+					<td><a class="simple" href=".">LandingPage</a></td>
+					<td>html</td>
+					<td>This page: SpringBoot View using Thymeleaf html5 template
+
+						<div class="news">SpringBoot can easily be deployed as either
+							jar or traditional war file. Use of templates such as thymeleaf
+							(boot default) or freemarker are recommended. Thymeleaf is trivial
+							to integrate and use in SpringBoot (view links below).</div> <a
+							class="pushButton" target="_blank"
+							href="http://www.thymeleaf.org/doc/articles/thvsjsp.html">Compare
+							templates versus jsp</a> <a class="pushButton" target="_blank"
+													href="http://www.thymeleaf.org/doc/articles/springmvcaccessdata.html">Learn
+							about Using html templates</a>
+
+					</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="currentTime">currentTime</a></td>
+					<td>text</td>
+					<td>Spring MVC returning plain text</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="currentUser">currentUser</a></td>
+					<td>text</td>
+					<td>Spring MVC returning plain text, and id of logged in user</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="currentUserDetails">currentUserDetails</a></td>
+					<td>text</td>
+					<td>Spring MVC returning plain text, and id of logged in user</td>
+				</tr>
+
+				<tr>
+					<td><button id="currentTimeButton" class="pushButton">currentTime</button></td>
+					<td>html</td>
+					<td>Spring MVC via jquery and alertify</td>
+				</tr>
+				<tr>
+					<td><button id="themeTablesButton" class="pushButton">theme
+							tables</button></td>
+					<td>html</td>
+					<td>JQuery tablesorter on tables</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="helloWithOptionalName">helloWithOptionalName</a></td>
+					<td>text</td>
+					<td>Spring @RestController with multiple @RequestMappings and
+						Optional @PathVariable name</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="testException">testException</a></td>
+					<td>text</td>
+					<td>Spring @RestController Exception Advice</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="testNullPointer">testNullPointer</a></td>
+					<td>text</td>
+					<td>Spring @Controller Null Pointer Exception Advice</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="missingTemplate">missingTemplate</a></td>
+					<td>text</td>
+					<td>Missing thymeleaf template</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="malformedTemplate">malformedTemplate</a></td>
+					<td>text</td>
+					<td>malformedTemplate thymeleaf template. ALL elements must be
+						terminated</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="addSessionVar">addSessionVar</a></td>
+					<td>text</td>
+					<td>Spring MVC with session variable; note embedded tomcat can
+						optional persist over restarts, or distribute for stateless
+						containers via redis</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="testAclFailure">testAclFailure</a></td>
+					<td>html</td>
+					<td>Spring Security - verify ACL deny message</td>
+				</tr>
+
+
+			</tbody>
+
+		</table>
+
+
+
+
+		<footer th:replace="csap/fragments/page :: footer"></footer>
+	</body>
+
+</html>

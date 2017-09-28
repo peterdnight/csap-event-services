@@ -1,0 +1,136 @@
+# why yaml http://jessenoller.com/blog/2009/04/13/yaml-aint-markup-language-completely-different
+
+status: warn
+
+monitorInterval: 10
+
+appenders:
+  
+  console:
+    name: consoleAppender
+    target: SYSTEM_OUT
+    PatternLayout:
+      Pattern: "%d ==== %F ==== thread: %t ==== %-8p>%n%C.%M() => %x (line: %L)%n\t%m%n%n"
+        
+  RollingFile: 
+    name: errorsAppender
+    fileName: logs/warnings.log
+    filePattern: "logs/warning-%i.log.gz"
+    append: true
+    DefaultRolloverStrategy:
+      max: 3
+    policies:
+      SizeBasedTriggeringPolicy:
+        size: "5 MB"
+    PatternLayout:
+      Pattern: "%d ==== %F ==== thread: %t ==== %-8p>%n%C.%M() => %x (line: %L)%n\t%m%n%n"
+        
+        
+#        Pattern: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+
+loggers:
+      
+  root: { level: info }
+
+  logger:
+    - name: org.csap.data
+      level: INFO
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: warn
+        
+    - name: scenario_3.data_rest_api
+      level: debug
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: warn
+      
+    - name: org.apache.catalina
+      level: warn
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+      
+    - name: org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer
+      level: info
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+      
+    - name: org.csap
+      level: info
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: warn
+        
+    - name: org.csap.data.db.HealthEventWriter
+      level: info
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: warn
+              
+    - name: org.csap.security
+      level: info
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: warn
+      
+    - name: org.sample
+      level: info
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: warn
+      
+    - name: org.apache.activemq
+      level: info
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: warn
+      
+    - name: org.springframework
+      level: warn
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: warn
+      
+    - name: org.springframework.security
+      level: warn
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+      - ref : errorsAppender
+        level: warn
+        
+    - name: org.springframework.boot.autoconfigure.security
+      level: warn
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+        
+    - name: test
+      level: info
+      additivity: false
+      AppenderRef:  
+      - ref: consoleAppender
+        
+
+      
+   

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org">
+
+
+	<head th:fragment="pageContent" th:remove="tag" >
+
+
+		<title>Adoption Trending</title>
+
+		<script th:replace="csap/fragments/libsAndStyles :: pageContent"></script>
+		<script th:src="@{/webjars/flot/0.8.3/jquery.flot.min.js}" ></script>
+		<script th:src="@{/webjars/flot/0.8.3/jquery.flot.pie.js}"></script>
+		<script th:src="@{/webjars/flot/0.8.3/jquery.flot.time.js}"></script>
+		<script th:src="@{/webjars/flot/0.8.3/jquery.flot.navigate.js}"></script>
+		<script th:src="@{/webjars/flot/0.8.3/jquery.flot.selection.js}"></script>
+		
+		
+		<script th:src="@{ js/modules/projects/trends.js }" ></script>
+		
+		
+		<link th:href="@{/js/csapLibs/qtip/jquery.qtip.min.css}" rel="stylesheet" type="text/css" media="screen" />
+		<script th:src="@{/js/csapLibs/qtip/jquery.qtip.min.js}"></script>
+
+		<script th:inline="javascript">
+			var api = [[   @{ ${"/api"}    }   ]];
+			var baseUrl = [[@{ ${"/"}}]];
+			$.ajaxSetup({
+			cache : false,
+					traditional : true
+			});
+
+		</script>
+
+		<style type="text/css">
+			
+			.ui-widget {
+				font-size: 1em;
+			}
+			
+			.linkField {
+				width: 25em;
+			}
+			.descField {
+				width: 10em;
+			}
+			.bordered th,.number {
+				text-align: center;
+			}
+
+
+			header {    
+				text-align: left;
+				padding-left: 2em; 
+				padding-right: 2em ;
+				margin-bottom: 1em;
+			}
+
+			table {
+				font-size: 0.8em ;
+				display: inline-block ;
+			}
+
+			.box{
+				display: none;
+				width: 100%;
+			}
+			.group{
+				display:inline-block;
+				width: 20em;
+			}
+
+			.ui-widget-content {
+				background:none;
+			}
+			.filters{
+				font-weight: bold;
+			}
+			#serviceHelpButton{	
+				float: right;    
+				font-size: 0.6em;    
+				line-height: 1.5em;
+				margin-right: 3em;
+			}
+			.centered{
+				text-align: center;
+			}
+			tfoot{	
+				border-top: 2px solid #808080;
+				font-weight: bold;
+				text-align: center;
+			}
+			
+			section.graph {
+				background-color:white;
+				margin-bottom: 0;
+				padding-bottom: 0;	
+				padding-top: 5px;;	
+				margin-right: 1em;
+				position: relative;
+				margin-left: 0em;
+				margin-top: 10px;
+
+			}
+			
+			.graphLabel {
+				font-weight: bold;
+				font-size: 20pt;
+			}
+
+			.analyticsLineGraph { 
+				height: 200px;
+				margin: 0; 
+				margin: 1em;
+				margin-top: 0.25em;
+				font-size: 20pt;
+
+			}
+			/* .legend table, .legend > div { 
+				height: 250px !important; 
+				opacity: 1 !important; 
+				right: -150px; 
+				top: 10px; 
+				width: 145px !important;
+			 }
+			.legend table { 
+				border: 1px solid #555; 
+				padding: 5px; 
+			} */
+
+			div.legend{
+
+				position:absolute;
+				width:300px;
+				z-index: 999;
+				font-size: 0.9em;
+				left: 35px;
+			}
+			.legendLeft {
+				left: 40px;
+				top: 10px;
+			}
+
+			.showGraphs{
+				margin-left: 0px;
+				margin-right: 10px;
+			}
+
+			.flot-tick-label {
+				color: #545454;
+				font-size: 0.7em;
+			}
+
+			#csapAdoptionTable td, #csapAdoptionTable th {
+				width: 6em;
+				text-align: right;
+				position: relative ;
+			}
+
+			#csapAdoptionTable td:nth-child(1), #csapAdoptionTable th:nth-child(1) {
+				width:1em;
+				padding:0;
+				padding-left: 10px;
+			}
+
+			#csapAdoptionTable td:nth-child(2), #csapAdoptionTable th:nth-child(2),
+			#csapAdoptionTable td:nth-child(3), #csapAdoptionTable th:nth-child(3),
+			#csapAdoptionTable td:nth-child(4), #csapAdoptionTable th:nth-child(4),
+			#csapAdoptionTable td:nth-child(10), #csapAdoptionTable th:nth-child(10) {
+				width:15em;
+				text-align: left;
+
+			}
+
+
+			#csapActivityTable td, #csapActivityTable th {
+				width: 6em;
+				text-align: right;
+				position: relative ;
+			}
+
+			#csapActivityTable td:nth-child(1), #csapActivityTable th:nth-child(1) {
+				width:1em;
+				padding:0;
+				padding-left: 10px;
+			}
+
+			#csapActivityTable td:nth-child(2), #csapActivityTable th:nth-child(2),
+			#csapActivityTable td:nth-child(3), #csapActivityTable th:nth-child(3),
+			#csapActivityTable td:nth-child(4), #csapActivityTable th:nth-child(4),
+			#csapActivityTable td:nth-child(9), #csapActivityTable th:nth-child(9) {
+				width:15em;
+				text-align: left;
+
+			}
+
+
+
+
+
+
+		</style>
+
+	</head>
+</html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<title>Data Test</title>
+		<script th:replace="~{ csap/fragments/libsAndStyles :: pageContent }"></script>
+
+
+		<script th:src="@{/js/simple.js}"  ></script>
+
+		<style>
+			table.simple  {
+				width: 80em;
+				margin-bottom: 3em;
+			}
+
+			table td:nth-child(1) {
+				width: 15em;
+			}
+
+			table td:nth-child(2) {
+				width: 5em;
+			}
+
+			header .noteAlt {
+				font-size: 0.7em;
+				margin: 0;
+				padding: 3px;
+			}
+			div.title {
+				width: 20em;
+				color: black;
+			}
+
+		</style>
+	</head>
+
+	<body>
+
+		<header th:replace="~{ csap/fragments/page :: header } "></header>
+
+		<table id="eventBrowser" class="simple" >
+			<thead>
+
+				<tr>
+					<th><div class="title">Event Browser</div> Click to launch</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+				<tr>
+					<td>
+						<a class="simple"  th:href="@{/}">All Events</a><br/>
+						<a class="simple"  th:href="@{/(appId='csapssp.gen',life=dev,category='/csap/ui/*',project='SNTC and PSS')}">SNTC Events</a><br/>
+						
+						<a class="simple"  th:href="@{/(category='/csap/reports/*') }">/csap/reports</a><br/>
+						<a class="simple"  th:href="@{/(category='/csap/ui/*')}">/csap/ui</a><br/>
+						<a class="simple"  th:href="@{/(category='/csap/reports/health*') }">/csap/reports/health</a><br/>
+						<a class="simple"  th:href="@{/(category='/csap/ui/*',userid='pnightin')}">pnightin events</a><br/>
+						<a class="simple"  th:href="@{/(category='/csap/ui/*',userid='pnightin',days=60)}">pnightin events 60 days</a><br/>
+						<a class="simple"  th:href="@{/(category='/csap/*',appId=csapeng.gen,life=prod,hostName='csap-prd01')}">csap-prd01 events</a><br/>
+						<a class="simple"  th:href="@{/(category='/csap/*',appId=csapeng.gen,life=prod,hostName='csap-prd99')}">csap-prd99 events</a><br/>
+						<a class="simple"  th:href="@{/(hostName='csap-prd01')}">csap-prd01 events (long)</a><br/>
+						<a class="simple"  th:href="@{/(category='/csap/metrics/*')}">/csap/metrics</a><br/>
+						<a class="simple"  th:href="@{/(category='/csap/System/*')}">/csap/System</a><br/>
+					</td>
+					<td>html</td>
+					<td>Show Events</td>
+				</tr>
+				
+				<tr>
+					<td>
+						<a class="simple"  th:href="@{api/event/metadata}">Search filters</a>
+						<br/>
+						<a class="simple"  th:href="@{api/event/metadata(appId='csapeng.gen')}">Search filters - csapeng.gen</a>
+						<br/>
+						<a class="simple"  th:href="@{api/event/metadata(appId='csapeng.gen',life='dev',fromDate='1/26/2017',toDate='2/1/2017')}">Search filters - csap dev</a>
+						<br/>
+						<a class="simple"  th:href="@{api/event/metadata(appId='csapssp.gen',project='SNTC and PSS',life='dev',fromDate='1/26/2017',toDate='2/1/2017')}">Search filters - smart dev</a>
+					</td>
+					<td>Json</td>
+					<td>/metadata: returns search filters such as userids, categories, hosts, etc</td>
+				</tr>
+
+				<tr>
+					<td>
+						<a class="simple"  th:href="@{api/event/filteredCount}">
+							event counts
+						</a>
+						
+						<br/>
+						<a class="simple"  th:href="@{api/event/filteredCount(appId='csapeng.gen')}">
+							csapeng.gen 
+						</a>
+						<br/>
+						<a class="simple"  th:href="@{api/event/filteredCount(appId='csapssp.gen')}">
+							csapssp.gen 
+						</a>
+						<br/>
+						<a class="simple"  th:href="@{api/event/filteredCount(search[value]='simpleSearchText=/csap/System/*')}">
+							count simpleSearchText=/csap/System/*
+						</a>
+						<br/>
+						<a class="simple"  th:href="@{api/event/filteredCount(searchText='appId=csapssp.gen,lifecycle=dev,from=9/2/2016,to=9/9/2016')}">
+							count csapssp.gen
+						</a>
+					
+					</td>
+					<td>Json</td>
+					<td>Filtered Count</td>
+				</tr>
+
+
+
+				<tr>
+					<td><a class="simple"  th:href="@{/stats}">Mongo Metrics</a></td>
+					<td>html</td>
+					<td>Metrics are collected by connecting to Mongo via java driver and pulling info</td>
+				</tr>
+
+
+			</tbody>
+
+		</table>
+
+
+		<table id="eventApiLocator" class="simple" >
+			<thead>
+
+				<tr>
+					<th><div class="title">Event API</div> Click to test</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+				<tr>
+					<td>
+						<a class="simple"  th:href="@{eventApi/latest(category='/csap/health',appId='csapeng.gen',life='prod')}">
+							Latest Health Event
+						</a>
+						
+						<br/>
+						<a class="simple"  th:href="@{eventApi/latestCached(category='/csap/health',appId='csapeng.gen',life='prod')}">
+							Latest Cached Health Event
+						</a>
+						
+						<br/>
+						<a class="simple"  th:href="@{eventApi/latestCached(category='/csap/system/model/summary',appId='csapeng.gen',life='dev')}">
+							Latest Model - csap dev
+						</a>
+						<br/>
+						<a class="simple"  th:href="@{eventApi/latestCached(category='/csap/system/model/summary',appId='csapir.gen',life='prod')}">
+							Latest Model - no project
+						</a>
+						<br/>
+						<a class="simple"  th:href="@{eventApi/latestCached(category='/csap/system/model/summary',appId='csapir.gen',life='prod',project='Contract_MPC_OV')}">
+							Latest Model - with project
+						</a>
+					
+					</td>
+					<td>Json</td>
+					<td>Latest Event</td>
+				</tr>
+
+
+
+				<tr>
+					<td>
+						<a class="simple"  th:href="@{eventApi/appIds}">
+							Appids
+						</a>
+						
+						<br/>
+						
+						<a class="simple"  th:href="@{eventApi/appIds(category='/csap/reports/host/daily',numDays=7)}">
+							Appids by filter
+						</a>
+						
+						<br/>
+						
+						<a class="simple"  th:href="@{eventApi/appIds(callback='someTestFunction',category='/csap/reports/host/daily',numDays=7)}">
+							Appids by filter and callback
+						</a>
+					</td>
+					<td>Json</td>
+					<td>Appids</td>
+				</tr>
+
+
+				<tr>
+					<td>
+						<a class="simple"  th:href="@{eventApi/lifecycles(appId='csapeng.gen',category='/csap/reports/host/daily',numDays=7)}">
+							Lifecycles - csapeng.gen
+						</a>
+						<br/>
+						<a class="simple"  th:href="@{eventApi/lifecycles(appId='csapssp.gen',category='/csap/reports/host/daily',numDays=7)}">
+							Lifecycles - csapssp.gen
+						</a>
+					</td>
+					<td>Json</td>
+					<td>Life cycles</td>
+				</tr>
+
+
+				<tr>
+					<td>
+						<a class="simple"  th:href="@{eventApi/count(appId='csapeng.gen')}">Count-csapeng.gen</a><br/>
+						<a class="simple"  th:href="@{eventApi/count(appId='csapeng.gen',project='CSAP Engineering')}">Count-csapeng.gen,CSAP Engineering</a>
+					</td>
+					<td>Json</td>
+					<td>Count</td>
+				</tr>
+
+
+				<tr>
+					<td><a class="simple"  th:href="@{eventApi/logRotateReport(appId=csapeng.gen)}">Log rotate report</a></td>
+					<td>Json</td>
+					<td>Log rotate report</td>
+				</tr>
+
+
+			</tbody>
+
+		</table>
+
+		<table id="eventServiceLocator" class="simple" >
+			<thead>
+
+				<tr>
+					<th><div class="title">Event Service API</div> Click to test</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+				<tr>
+					<td><a class="simple"  th:href="@{api/event}">Get Event</a></td>
+					<td>Json</td>
+					<td>Get Event</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple"  th:href="@{api/event(userid='csapeng.gen',pass='change')}">Get Event With Credentials</a></td>
+					<td>Json</td>
+					<td>Get Event With Credentials</td>
+				</tr>
+
+
+				<tr>
+					<td><a class="simple"  th:href="@{api/event(search[value]='simpleSearchText=/csap/health')}">Health Events</a></td>
+					<td>Json</td>
+					<td>Health Events</td>
+				</tr>
+
+
+				<tr>
+					<td><a class="simple"  th:href="@{api/event(search[value]='simpleSearchText=/csap/ui')}">UI events</a></td>
+					<td>Json</td>
+					<td>UI events</td>
+				</tr>
+
+
+				<tr>
+					<td><a class="simple"  th:href="@{api/event(search[value]='simpleSearchText=/csap/metrics/*')}">Metrics Events</a></td>
+					<td>Json</td>
+					<td>Metrics Events</td>
+				</tr>
+
+
+				<tr>
+					<td><a class="simple"  th:href="@{api/event(search[value]='simpleSearchText=/csap/System/*')}">System Evnets</a></td>
+					<td>Json</td>
+					<td>System Evnets</td>
+				</tr>
+
+
+				<tr>
+					<td> Post an event to data service. Use of generic id - typically belonging to CSAPRESTAPP security group.</td> 
+					<td>Text</td>
+					<td>
+						<form action="api/event" method="post">
+							<label> userid: 
+								<input id="userid" style="width: 6em"
+												   name="userid" value="csapeng.gen"/>
+							</label> 
+							<label> pass: 
+								<input id="pass" style="width: 6em;" name="pass" value="csaprest123!" type="password" />
+							</label>
+							
+							<input type="submit" class="submit"
+								   value="Post Event" />
+							<br/>
+							<textarea name="eventJson" cols="50" rows="10">
+{
+	"category" : "/csap/health",
+	"summary" : "Health Data",
+	"lifecycle" : "prod",
+	"project" : "CSAP Engineering",
+	"host": "csap-prd02",
+	"createdOn" : {
+						"unixMs" : 1498052820275,
+						"date" : "2017-06-21",
+						"time" : "11:18:32"
+				  },
+	"data" : {
+
+		"vm" : {
+									"cpuCount" : 8,
+								 "cpuLoad" : 0.0,
+									"host" : "csap-prd02",
+									"packageName" : "CSAP Engineering",
+
+				"capabilityName" : "CSAP Development",
+									"lifecycle" : "dev"
+						 },
+					"Healthy" : true,
+					"services" : {
+										 "total" : 20,
+
+						"active" : 18
+								 }
+                                               }
+                                       }
+							</textarea>
+
+
+						</form>
+
+					</td>
+				</tr>
+
+			</tbody>
+
+		</table>
+
+
+
+		<table id="SpringMvc" class="simple">
+			<thead>
+
+				<tr>
+					<th><div class="title">Model View Controller</div> Click to
+						test</th>
+					<th>returns</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+
+			<tbody>
+
+				<tr>
+					<td><a   class="simple" href=".">LandingPage</a></td>
+					<td>html</td>
+					<td>This page: SpringBoot View using Thymeleaf html5 template
+
+						<div class="news">
+							SpringBoot can easily be deployed as either jar or traditional
+							war file. Use of templates such as thymeleaf (boot default) or freemarker are
+							recommended. Thymeleaf is trivial to integrate and use in
+							SpringBoot (view links below).
+						</div>
+
+						<a   class="pushButton" target="_blank"
+							 href="http://www.thymeleaf.org/doc/articles/thvsjsp.html">Compare
+							templates versus jsp</a>
+						<a   class="pushButton" target="_blank"
+							 href="http://www.thymeleaf.org/doc/articles/springmvcaccessdata.html">Learn
+							about Using html templates</a>
+
+					</td>
+				</tr>
+
+				<tr>
+					<td><a   class="simple" href="currentTime">currentTime</a></td>
+					<td>text</td>
+					<td>Spring MVC returning plain text</td>
+				</tr>
+
+				<tr>
+					<td><button id="currentTimeButton" class="pushButton">currentTime</button></td>
+					<td>html</td>
+					<td>Spring MVC via jquery and alertify</td>
+				</tr>
+				<tr>
+					<td><button id="themeTablesButton" class="pushButton">theme tables</button></td>
+					<td>html</td>
+					<td>JQuery tablesorter on tables</td>
+				</tr>
+
+				<tr>
+					<td><a  class="simple" href="testException">testException</a></td>
+					<td>text</td>
+					<td>Spring @RestController Exception Advice</td>
+				</tr>
+
+				<tr>
+					<td><a  class="simple" href="testNullPointer">testNullPointer</a></td>
+					<td>text</td>
+					<td>Spring @Controller Null Pointer Exception Advice</td>
+				</tr>
+
+				<tr>
+					<td><a   class="simple" href="missingTemplate">missingTemplate</a></td>
+					<td>text</td>
+					<td>Missing thymeleaf template</td>
+				</tr>
+
+				<tr>
+					<td><a  class="simple" href="malformedTemplate">malformedTemplate</a></td>
+					<td>text</td>
+					<td>malformedTemplate thymeleaf template. ALL elements must be terminated</td>
+				</tr>
+
+				<tr>
+					<td><a class="simple" href="addSessionVar">addSessionVar</a></td>
+					<td>text</td>
+					<td>Spring MVC with session variable; note embedded tomcat can
+						optional persist over restarts, or distribute for stateless
+						containers via redis</td>
+				</tr>
+
+				<tr>
+					<td><a  class="simple" href="testAclFailure">testAclFailure</a></td>
+					<td>html</td>
+					<td>Spring Security - verify ACL deny message</td>
+				</tr>
+				<tr>
+					<td><a  class="simple" href="testAsync">test @async</a></td>
+					<td>html</td>
+					<td>verify async thread pool</td>
+				</tr>
+
+
+			</tbody>
+
+		</table>
+
+
+
+
+		<footer th:replace="csap/fragments/page :: footer"></footer>
+	</body>
+
+</html>

@@ -1,0 +1,269 @@
+
+# CSAP agent sets based on lifecycle 
+spring.profiles.active: desktop,company
+
+---
+#
+#    Common Config
+#
+
+#crossLaunch
+csap-agent.host-url-pattern: "${hostUrlPattern:http://CSAP_HOST.yourcompany.com:8011/CsAgent}"
+
+# Disable fallback to basic auth, use LDAP or not based on the above
+security:
+  basic:
+    enabled: false
+    
+spring: 
+  aop:
+    proxy-target-class: true  # aop used for performance
+    
+my-service-configuration:
+  health:
+    appIds:
+      - csapeng.gen
+      - csapssp.gen
+    lifes:
+      - prod
+      
+  mongo-config:
+    hosts: "${mongoHosts}"
+    port: "${mongoPort:27017}"
+    user: "${mongoUser:dataBaseReadWriteUser}"
+    password: "${mongoPassword}"
+    user-db: "${mongoUserDb:admin}"
+    
+
+
+# limit throughput to mongo - inserts can overwhelm the system.
+
+server:
+  port: 8090
+  tomcat:
+    max-threads: 25
+  context-path: /CsapData
+  session:
+    persistent: false
+  error:
+    include-stacktrace: always
+
+
+
+csap: 
+  baseContext: /csap
+  info:
+    name: "${csapName:MyDesktop}"
+    load-balancer-url: "${csapLbUrl:http://csap-secure.yourcompany.com}"
+    lifecycle: "${csapLife:dev}"
+    version: "${csapVersion:1.0-Desktop}"
+    http-port: "${csapHttpPort:8080}" 
+    working-dir: "${csapWorkingDir:/the/path/to/app}" 
+    cluster: "${csapName:dev-desktop-1}"
+    
+  documentation:
+      enabled: true
+    
+  encryptable-properties:
+    enabled: true
+    property-files:
+      - csapSecurity.properties  # security
+      
+  web-server:
+    enabled: true
+    ajp-secret: ${csapAjp:ThisWillBeReplaced}
+    max-connections-ajp: 20
+  
+  security:
+    enabled: true
+    ldap-enabled: true
+    csrf-enabled: true
+    rest-api-filter:
+      enabled: true
+      urls:
+        - "/api/*"
+      group: "ROLE_CSAPRESTAPP"
+      cache-seconds: 3600
+  
+  performance:
+    enabled: true
+    
+    monitor-urls: 
+        - /
+        - /eventApi/*
+        - /api/event/*
+        
+    alert:
+      debug: false
+      remember-count: ${csapMaxBacklog:1000}
+      
+      notify:
+        addresses: "${csapAddresses:disabled}"
+        frequency: "${csapFrequency:4}"
+        time-unit: "${csapTimeUnit:HOURS}"
+        email-time-out-ms: 500
+        
+      # NOTE: limits can be overwritten using application override
+      limits: 
+        - 
+          id: health.exceptions
+          ignore-null: true
+          occurences-max: 2
+          collect-time: 1
+          collect-units: MINUTES
+          
+         # event browser - paginated events
+        - 
+          id: http.data.api.event.GET
+          ignore-null: true
+          max-time: 6
+          max-units: SECONDS
+          
+          # event browser - search filters
+        - 
+          id: searchFilters.allTotal
+          ignore-null: true
+          max-time: 10
+          max-units: SECONDS
+          
+        - 
+          id: searchFilters.errors
+          ignore-null: true
+          occurences-max: 0
+          
+          # event browser - matching event counts
+        - 
+          id: http.data.api.event.filteredCount.GET
+          ignore-null: true
+          max-time: 3
+          max-units: SECONDS
+          
+        - 
+          id: addEvent.insert
+          ignore-null: true
+          mean-time:  1000
+          mean-units: MILLISECONDS
+          max-time: 5
+          max-units: SECONDS
+        - 
+          id: addEvent.insert.performance.data
+          ignore-null: true
+          mean-time:  200
+          mean-units: MILLISECONDS
+          max-time: 10
+          max-units: SECONDS
+        - 
+          id: addEvent.insert.performance.summary.report
+          ignore-null: true
+          mean-time:  500
+          mean-units: MILLISECONDS
+          max-time: 10
+          max-units: SECONDS
+
+        
+  locator:
+    enabled: true
+    active-urls-locator: "${csapLbUrl:https://csap-secure.yourcompany.com}/admin/api/service/urls/active/"
+    low-resources-url-locator: "${csapLbUrl:https://csap-secure.yourcompany.com}/admin/api/service/url/low/"
+    low-resource: "lowCpu"  #lowLoad, lowCpu, ...
+
+
+
+# Spring Boot actuator exposes /health, /info, and /metrics; push then underneath a secure url
+management:
+  context-path: /devOps
+  security:
+    enabled: true
+
+# Spring actuator: info settings
+info:
+  build.profile: ${spring.profiles.active}
+  build.artifact: "Maven: @project.artifactId@"
+  build.name: "@project.name@"
+  build.description: "@project.description@"
+  build.version: "@project.version@"
+ 
+---
+spring.profiles: dev
+
+
+my-service-configuration:
+  health: 
+    appIds:
+      - csapeng.gen
+    lifes:
+      - dev
+      
+
+# nothing for prod/lt/stage
+
+#
+#  ================ desktop configuration
+#
+
+---
+spring:
+    profiles: desktop
+
+my-service-configuration:
+  mongo-config:
+    hosts: "localhost"
+    password: "localhostpassword"
+
+server:
+  context-path: /data
+  
+management:
+  security:
+    enabled: false
+    
+csap:
+  web-server.enabled: true
+  
+  security: 
+    enabled: false
+    ldap-enabled: false   # requires csapSecurity.properties in your home dir 
+    rest-api-filter:
+      enabled: false
+      
+  encryptable-properties:
+    enabled: true
+    algorithm: PBEWITHMD5ANDDES 
+    property-files:
+      - csapSecurity.properties
+      - "${csapTest}/csapSecurity.properties"
+    
+      
+---
+
+spring:
+  profiles: junit
+  
+  cache:
+      type: none  # cachemanager lifecycles will impact, so disable
+csap:
+  web-server.enabled: false
+  
+  security: 
+    enabled: false
+    ldap-enabled: false   # requires csapSecurity.properties in your home dir 
+    rest-api-filter:
+      enabled: false
+      
+  encryptable-properties:
+    enabled: true
+    property-files:
+      - csapSecurity.properties
+      - ${user.home}/csapSecurity.properties #overwrite the above if it exists
+    
+
+      
+my-service-configuration:
+  mongo-config:
+    hosts: "${mongoHosts:127.0.0.1}"
+    password: password
+    
+
+    
+
+  

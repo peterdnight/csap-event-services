@@ -1,0 +1,9 @@
+
+#
+# spring boot provides many options to externalize configuration.
+# one option for desktop - copy this file to your home directory, update, and add
+# --spring.config.location=file:c:/Users/yourHomeDir/ 
+
+my-service-configuration.mongo-config:
+    hosts: "127.0.0.1"
+    password: ""
