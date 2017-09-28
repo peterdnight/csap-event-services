@@ -1,5 +1,6 @@
 package org.csap.analytics;
 
+import org.csap.helpers.CsapRestTemplateFactory;
 import org.csap.integations.CsapInformation;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
@@ -21,7 +22,7 @@ import org.springframework.web.client.RestTemplate;
  * @author paranant
  */
 @Configuration
-@ConfigurationProperties(prefix = "my-service-configuration.event-config")
+@ConfigurationProperties ( prefix = "my-service-configuration.event-config" )
 public class EventServiceConfiguration {
 
 	private Logger logger = LoggerFactory.getLogger( getClass() );
@@ -29,37 +30,41 @@ public class EventServiceConfiguration {
 	private String url;
 	private String pass;
 	private String user;
-	
+
 	@Autowired
-	public EventServiceConfiguration(CsapInformation csapInformation, StandardPBEStringEncryptor encryptor) {
-		
-		this.csapInformation = csapInformation ;
-		this.encryptor = encryptor ;
-		
+	public EventServiceConfiguration( CsapInformation csapInformation, StandardPBEStringEncryptor encryptor ) {
+
+		this.csapInformation = csapInformation;
+		this.encryptor = encryptor;
+
 	}
-	
+
 	private CsapInformation csapInformation;
-	private StandardPBEStringEncryptor encryptor ;
-	
+	private StandardPBEStringEncryptor encryptor;
 
-	public void postEventData(String jsonDoc) {
+	public void postEventData ( String jsonDoc ) {
 
-		String eventServiceUrl = csapInformation.getLoadBalancerUrl() +  url;
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType( org.springframework.http.MediaType.APPLICATION_JSON );
+		String eventServiceUrl = csapInformation.getLoadBalancerUrl() + url;
+		try {
 
-		MultiValueMap<String, String> requestObj = new LinkedMultiValueMap<String, String>();
-		requestObj.add("userid", user );
-		requestObj.add("pass", pass );
-		requestObj.add( "eventJson", jsonDoc );
-		
-		logger.debug( "Posting to url: {} \n\t Data: {}", eventServiceUrl, requestObj );
-		String result = getRestPostTemplate().postForObject( eventServiceUrl, requestObj, String.class );
-		logger.debug( "result{}", result );
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType( org.springframework.http.MediaType.APPLICATION_JSON );
+
+			MultiValueMap<String, String> requestObj = new LinkedMultiValueMap<String, String>();
+			requestObj.add( "userid", user );
+			requestObj.add( "pass", pass );
+			requestObj.add( "eventJson", jsonDoc );
+
+			logger.debug( "Posting to url: {} \n\t Data: {}", eventServiceUrl, requestObj );
+			String result = getRestPostTemplate().postForObject( eventServiceUrl, requestObj, String.class );
+			logger.debug( "result{}", result );
+		} catch (Exception e) {
+			logger.error( "{} Failed to post event data user:{} , reason {}", eventServiceUrl, user, CsapRestTemplateFactory.getFilteredStackTrace( e, "csap" ) );
+		}
 
 	}
-	
-	public RestTemplate getRestPostTemplate() {
+
+	public RestTemplate getRestPostTemplate () {
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 		// factory.setHttpClient(httpClient);
@@ -76,41 +81,41 @@ public class EventServiceConfiguration {
 		return restTemplate;
 	}
 
-
-	public void setPass(String pass) {
-		String password = pass ;
+	public void setPass ( String pass ) {
+		String password = pass;
 		try {
-			password = encryptor.decrypt(pass );
-		} catch ( EncryptionOperationNotPossibleException e ) {
+			password = encryptor.decrypt( pass );
+		} catch (EncryptionOperationNotPossibleException e) {
 			logger.warn( "Password is not encrypted. Use CSAP encrypt to generate" );
 		}
-		logger.info("Password is: {}", password) ;
+		logger.info( "Password is: {}", password );
 		this.pass = password;
 	}
 
-	public String getPass() {
-		return pass ;
-	}
-	
-	public String getUser() {
-		return user ;
+	public String getPass () {
+		return pass;
 	}
 
-	public void setUser(String user) {
-		this.user = user ;
+	public String getUser () {
+		return user;
+	}
+
+	public void setUser ( String user ) {
+		this.user = user;
 	}
 
 	/**
 	 * @return the url
 	 */
-	public String getUrl() {
+	public String getUrl () {
 		return url;
 	}
 
 	/**
-	 * @param url the url to set
+	 * @param url
+	 *            the url to set
 	 */
-	public void setUrl(String url) {
+	public void setUrl ( String url ) {
 		this.url = url;
 	}
 
