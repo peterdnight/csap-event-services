@@ -95,7 +95,7 @@ public class MongoEmbedded {
 							.download( new DownloadConfigBuilder()
 									.defaultsForCommand( command )
 									.artifactStorePath( new FixedPath( "./target" ) )
-					// .downloadPath("http://csaptools.cisco.com/mongo/")
+					// .downloadPath("http://csaptools.yourcompany.com/mongo/")
 					) )
 					.build();
 
@@ -144,7 +144,7 @@ public class MongoEmbedded {
 		if ( !jsonFile.exists() ) {
 			logger.info( "File {} does not exists in target. Downloading from tools", fileName );
 			RestTemplate restTemplate = getGenericRestTemplate();
-			String restUrl = "http://csaptools.cisco.com/mongo/testdata/" + fileName;
+			String restUrl = "http://csaptools.yourcompany.com/mongo/testdata/" + fileName;
 			String eventsJson = restTemplate.getForObject( restUrl, String.class );
 			FileUtils.writeStringToFile( jsonFile, eventsJson );
 		} else {

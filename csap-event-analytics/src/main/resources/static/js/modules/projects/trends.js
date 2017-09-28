@@ -275,7 +275,7 @@ function Analytics() {
 		var businessProgramName = dataJson[counter]._id;
 		var appId = dataJson[counter].appId;
 		if ( null != appId ) {
-			var href = '<a class="simple" target="_blank" href="http://csaptools.cisco.com/admin/os/performance?life=dev&project=' + businessProgramName + '&appId=' + appId + '">' + displayName + '</a>';
+			var href = '<a class="simple" target="_blank" href="' + analyticsPortal + '?life=dev&project=' + businessProgramName + '&appId=' + appId + '">' + displayName + '</a>';
 			//console.log(href);
 			return href;
 		} else {

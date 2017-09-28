@@ -62,8 +62,10 @@ public class LandingPage {
 	}
 
 	@GetMapping("/trends")
-	public ModelAndView analytics() {
+	public ModelAndView analytics( Model springViewModel ) {
 		logger.debug("in details");
+		
+		springViewModel.addAttribute("analyticsPortal", csapInformation.getLoadBalancerUrl() + "/admin/os/performance");
 		return new ModelAndView("projects/trends");
 	}
 

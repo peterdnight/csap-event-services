@@ -23,6 +23,7 @@
 
 		<script th:inline="javascript">
 			var api = [[   @{ ${"/api"}    }   ]];
+			var analyticsPortal = [[ ${ analyticsPortal } ]] ;
 			var baseUrl = [[@{ ${"/"}}]];
 			$.ajaxSetup({
 			cache : false,

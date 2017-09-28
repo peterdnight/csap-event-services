@@ -230,12 +230,18 @@ public class CsapAdoptionReportBuilder {
 		
 		MongoCursor<Document> projectCursor = projectWithLife.iterator();
 		//for(DBObject dbObject : projectWithLife){
+		
+		StringBuilder summaryInfo = new StringBuilder("Generating: " + EventJsonConstants.CSAP_MODEL_SUMMAY_CATEGORY) ;
+		
 		while (projectCursor.hasNext()) {
 			Document dbObject = projectCursor.next();
 			String projectName = (String) dbObject.get( "_id" );
 			GlobalAnalyticsSummary summary = new GlobalAnalyticsSummary();
 			summary.setProjectName( projectName );
 			List lifes = (List) dbObject.get( "lifes" );
+
+			summaryInfo.append( "\n\t Project: " + pad(projectName) + " lifes: " + pad(lifes.toString()) ) ;
+			
 			boolean dataExists = false;
 			for ( Object life : lifes ) {
 				Document query = analyticsHelper.constructModelSummaryQuery( projectName, life );
@@ -264,13 +270,21 @@ public class CsapAdoptionReportBuilder {
 				}
 			}
 			if ( dataExists ) {
+				summaryInfo.append( " - found") ;
 				allGlobalActivity.put( projectName, summary );
 			} else {
-				logger.warn( "Report will not include Project: {}, Lifecycles: {} - reason:  model summary not found: {}", projectName, lifes, EventJsonConstants.CSAP_MODEL_SUMMAY_CATEGORY );
+				summaryInfo.append( " - warning: missing summary") ;
+				logger.warn( "Report will not include Project: {}, Lifecycles: {} - reason:  model summary not found: {}", 
+					projectName, lifes, EventJsonConstants.CSAP_MODEL_SUMMAY_CATEGORY );
 			}
 		}
 
+		logger.info( summaryInfo.toString() ) ;
 		logger.debug( "allGlobalActivity {}", allGlobalActivity );
+	}
+	
+	public static String pad( String input) {
+		return StringUtils.rightPad( input, 25 ) ;
 	}
 
 	public void retrieveInfoFromClusterConfig(int offSet, Map<String, GlobalAnalyticsSummary> allGlobalActivity, String projectName, List lifes) {
