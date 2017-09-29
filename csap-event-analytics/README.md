@@ -1,10 +1,9 @@
 
-# csap-event-data
+# csap-event-analytics
 
 ## Provides
 
-The data service provides both an event browser (UI) to display system events and a event REST API for
-receiving. Every CSAP agent deployed uploads data based on user activity and scheduled system collection. 
+The analytics service provides historical data feeds for the management portals, as well as adoption reports.
  
 Refer to:  [CSAP Event Service](https://github.com/csap-platform/csap-event-services),
 
@@ -12,14 +11,16 @@ Refer to:  [CSAP Event Service](https://github.com/csap-platform/csap-event-serv
 ## Configuration
 
 The following environment variables are required:
-
 ```
 {
 	"mongoHosts": "$serviceRef:mongoDb",
 	"mongoUser": "$lifeCycleRef:mongoUser",
-	"mongoPassword": "$lifeCycleRef:mongoPassword"
+	"mongoPassword": "$lifeCycleRef:mongoPassword",
+	"dataServiceUser": "$lifeCycleRef:dataServiceUser",
+	"dataServicePass": "$lifeCycleRef:dataServicePass"
 }
 ```
+
 
 ### Desktop development:
 - Some tests require provisioned systems, such as LDAP, git, etc.

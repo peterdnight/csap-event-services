@@ -1,3 +1,5 @@
-/.apt_generated/
 /target/
 /logs/
+/build/
+/temp/
+/.*.md.html
